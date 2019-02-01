@@ -1,73 +1,72 @@
 /*
 
-2009ƒÍ7‘¬20
+2009Âπ¥7Êúà20
 
-Sohn-∫´÷«∫Ë
+Sohn-Èü©Êô∫È∏ø
 
-E-Mail:sohn@163.com
+E-Mail:han.zhihong@qq.com
 
-¿‡÷˜“™π¶ƒ‹£∫MD5º”√‹
+Á±ª‰∏ªË¶ÅÂäüËÉΩÔºöMD5Âä†ÂØÜ
 
 */
 
-#ifndef __MD5_H__
-#define __MD5_H__
-
+#ifndef MD5_H
+#define MD5_H
+ 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* PROTOTYPES should be set to one if and only if the compiler supports
-  function argument prototyping.
-  The following makes PROTOTYPES default to 0 if it has not already
-  been defined with C compiler flags.
- */
-
-#ifndef PROTOTYPES
-#define PROTOTYPES 0
-#endif
-
-/* POINTER defines a generic pointer type */
-typedef unsigned char *POINTER;
-
-/* UINT2 defines a two byte word */
-typedef unsigned short int UINT2;
-
-/* UINT4 defines a four byte word */
-typedef unsigned long int UINT4;
-
-/* PROTO_LIST is defined depending on how PROTOTYPES is defined above.
-If using PROTOTYPES, then PROTO_LIST returns the list, otherwise it
-  returns an empty list.
- */
-#if PROTOTYPES
-#define PROTO_LIST(list) list
-#else
-#define PROTO_LIST(list) ()
-#endif
-
-/* MD5 context. */
-typedef struct {
-  UINT4 state[4];          /* state (ABCD) */
-  UINT4 count[2];          /* number of bits, modulo 2^64 (lsb first) */
-  unsigned char buffer[64];/* input buffer */
-} MD5_CTX;
-
-void MD5Init(MD5_CTX *);
-void MD5Update(MD5_CTX *, unsigned char *, unsigned int);
-void MD5Final(unsigned char [16], MD5_CTX *);
-
-
-/* extended function */
-int  MDFile(char *filename , char *digest);
-void MDPrint(unsigned char digest[16]);
-void MDString(char *str,char *digest);
-void MDData(char *data, int len,char *digest);
-char* MDStk(char *src16,char *digest33);//◊™ªª∏Ò Ω
-
+typedef struct
+{
+    unsigned int count[2];
+    unsigned int state[4];
+    unsigned char buffer[64];   
+}MD5_CTX;
+ 
+                         
+#define F(x,y,z) ((x & y) | (~x & z))
+#define G(x,y,z) ((x & z) | (y & ~z))
+#define H(x,y,z) (x^y^z)
+#define I(x,y,z) (y ^ (x | ~z))
+#define ROTATE_LEFT(x,n) ((x << n) | (x >> (32-n)))
+#define FF(a,b,c,d,x,s,ac) \
+          { \
+          a += F(b,c,d) + x + ac; \
+          a = ROTATE_LEFT(a,s); \
+          a += b; \
+          }
+#define GG(a,b,c,d,x,s,ac) \
+          { \
+          a += G(b,c,d) + x + ac; \
+          a = ROTATE_LEFT(a,s); \
+          a += b; \
+          }
+#define HH(a,b,c,d,x,s,ac) \
+          { \
+          a += H(b,c,d) + x + ac; \
+          a = ROTATE_LEFT(a,s); \
+          a += b; \
+          }
+#define II(a,b,c,d,x,s,ac) \
+          { \
+          a += I(b,c,d) + x + ac; \
+          a = ROTATE_LEFT(a,s); \
+          a += b; \
+          }                                            
+void MD5Init(MD5_CTX *context);
+void MD5Update(MD5_CTX *context,unsigned char *input,unsigned int inputlen);
+void MD5Final(MD5_CTX *context,unsigned char digest[16]);
+void MD5Transform(unsigned int state[4],unsigned char block[64]);
+void MD5Encode(unsigned char *output,unsigned int *input,unsigned int len);
+void MD5Decode(unsigned int *output,unsigned char *input,unsigned int len);
+ 
+void MDString (char *str,char *digest);
+char* MDStk(char *src16,char *digest33);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __MD5_H__
+#endif
+
