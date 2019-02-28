@@ -1,6 +1,9 @@
 #include <memory.h>
+#include <string.h>
 #include "md5.h"
- 
+#include <stdlib.h>
+#include <stdio.h>
+
 unsigned char PADDING[]={0x80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -165,23 +168,43 @@ void MDString (char *str,char *digest)
 {
 	MD5_CTX md5;
 	MD5Init(&md5);         		
-	MD5Update(&md5, str,strlen((char *) str));
-	MD5Final(&md5, digest);        
+	MD5Update(&md5, (unsigned char*)str,(unsigned int)strlen((char *) str));
+	MD5Final(&md5, (unsigned char*)digest);        
+}
+void MDtoHex(unsigned char n,char*a,char*b)
+{
+      char tmpBuf[4]={0}; 
+      itoa(n,tmpBuf,16);
+      if(0==tmpBuf[1])
+      {
+        //个位数
+        *a=0x30;
+        *b=tmpBuf[0];
+      }
+      else
+      {
+        //两位数
+        *a=tmpBuf[0];
+        *b=tmpBuf[1];
+      }
 }
 
 char* MDStk(char *src16,char *digest33)
 {
-    char tmp[16];
-	short i;
-	memcpy(tmp,src16,16);
-	memset(digest33,0,sizeof(33));
+	int i,j;
+	char a,b;
+	char srctmp[20]={0};
+	memcpy(srctmp,src16,16);
+	memset(digest33,0,33);
 	for(i=0;i<16;i++)
 	{
-		sprintf(digest33,"%s%02x",digest33,(unsigned char)tmp[i]);
+		MDtoHex(srctmp[i],&a,&b);
+		j=i*2;
+		digest33[j]=a;
+		digest33[j+1]=b;
 	}
 	return digest33;
 }
-
 
 /*
 int main(int argc, char *argv[])
