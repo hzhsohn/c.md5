@@ -62,6 +62,7 @@ void MD5Encode(unsigned char *output,unsigned int *input,unsigned int len);
 void MD5Decode(unsigned int *output,unsigned char *input,unsigned int len);
  
 void MDString (char *str,char *digest);
+void MDtoHex(unsigned char n,char*a,char*b);
 char* MDStk(char *src16,char *digest33);
 
 #ifdef __cplusplus
